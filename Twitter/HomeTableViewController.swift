@@ -21,6 +21,9 @@ class HomeTableViewController: UITableViewController {
         
         refresh.addTarget(self, action: #selector(loadTweets), for: .valueChanged)
         tableView.refreshControl = refresh
+        
+        self.tableView.rowHeight = UITableView.automaticDimension
+        self.tableView.estimatedRowHeight = 150
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -33,7 +36,7 @@ class HomeTableViewController: UITableViewController {
         numberOfTweets = 20
         let myUrl = "https://api.twitter.com/1.1/statuses/home_timeline.json"
         let params = ["count": numberOfTweets]
-        TwitterAPICaller.client?.getDictionariesRequest(url: myUrl, parameters: params, success: { (tweets: [NSDictionary]) in
+        TwitterAPICaller.client?.getDictionariesRequest(url: myUrl, parameters: params as [String : Any], success: { (tweets: [NSDictionary]) in
             
             self.tweetArray.removeAll()
             
@@ -90,6 +93,12 @@ class HomeTableViewController: UITableViewController {
         
         cell.tweetContent.text = tweetArray[indexPath.row]["text"] as? String
         cell.userNameLabel.text = user["name"] as? String
+        
+        cell.setFavorited(tweetArray[indexPath.row]["favorited"] as! Bool)
+        
+        cell.setRetweet(tweetArray[indexPath.row]["retweeted"] as! Bool)
+        
+        cell.tweetId = tweetArray[indexPath.row]["id"] as! Int
         
         return cell
     }
